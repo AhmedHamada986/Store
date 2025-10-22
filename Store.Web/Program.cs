@@ -31,7 +31,7 @@ namespace Store.Web
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddScoped<IUniteOfWork, UniteOfWork>();
             builder.Services.AddScoped<IServiceManager, ServiceManger>();
-            builder.Services.AddAutoMapper(M=>M.AddProfile(new ProductProfile()));
+            builder.Services.AddAutoMapper(M=>M.AddProfile(new ProductProfile(builder.Configuration)));
 
 
                var app = builder.Build();
@@ -40,7 +40,7 @@ namespace Store.Web
             var dbInitializer= scope.ServiceProvider.GetRequiredService<IDbInitializer>();
             await dbInitializer.InitializeAsync();
 
-
+             app.UseStaticFiles();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -48,7 +48,7 @@ namespace Store.Web
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
