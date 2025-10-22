@@ -14,9 +14,9 @@ namespace Store.Presentation
     public class ProductsController(IServiceManager _serviceManager) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetALlProducts()
+        public async Task<IActionResult> GetALlProducts(int? brandId, int? typeId,string? sort,string? search  )
         {
-            var result = await _serviceManager.ProductService.GetAllProductsAsync();
+            var result = await _serviceManager.ProductService.GetAllProductsAsync(brandId, typeId,sort,search);
 
             if (result is null) return BadRequest();
 

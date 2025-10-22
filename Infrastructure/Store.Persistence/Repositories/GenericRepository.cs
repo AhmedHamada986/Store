@@ -14,15 +14,19 @@ namespace Store.Persistence.Repositories
     {
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool changeTracker = false)
         {
-            if (typeof(TEntity) == typeof(Product)) {
+
+
+
+            if (typeof(TEntity) == typeof(Product))
+            {
                 return changeTracker ?
-                 await _context.Products.Include(P=>P.Brand).Include(P=>P.Type).ToListAsync() as IEnumerable<TEntity> :
-                 await _context.Products.Include(P=>P.Brand).Include(P=>P.Type).AsNoTracking().ToListAsync() as IEnumerable<TEntity>;
+                 await _context.Products.Include(P => P.Brand).Include(P => P.Type).ToListAsync() as IEnumerable<TEntity> :
+                 await _context.Products.Include(P => P.Brand).Include(P => P.Type).AsNoTracking().ToListAsync() as IEnumerable<TEntity>;
 
             }
-          return changeTracker?
-                await _context.Set<TEntity>().ToListAsync():
-                await _context.Set<TEntity>().AsNoTracking().ToListAsync();
+            return changeTracker ?
+                  await _context.Set<TEntity>().ToListAsync() :
+                  await _context.Set<TEntity>().AsNoTracking().ToListAsync();
         }
 
         public async Task<TEntity?> GetAsync(TKey key)
@@ -49,7 +53,19 @@ namespace Store.Persistence.Repositories
             _context.Remove(entity);
         }
 
-      
+        public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TKey, TEntity> spec, bool changeTracker = false)
+        {
+          return await ApplySpecifications(spec).ToListAsync();
+        }
 
+        public async Task<TEntity?> GetAsync(ISpecification<TKey, TEntity> spec)
+        {
+           return await ApplySpecifications(spec).FirstOrDefaultAsync();
+        }
+
+        private IQueryable<TEntity> ApplySpecifications(ISpecification<TKey, TEntity>spec   ) {
+
+            return SpecificationEvaluator.GetQuery(_context.Set<TEntity>(), spec);
+        }
     }
 }
