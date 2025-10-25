@@ -25,7 +25,7 @@ namespace Store.Services.Products
 
             
             var products = await _uniteOfWork.GetRepository<int, Product>().GetAllAsync(spec);
-            var result = _mapper.Map<IEnumerable<ProductResponse>>(products);
+            var result = _mapper.Map<IEnumerable<ProductResponse>>(products); 
             return result;
         }
 

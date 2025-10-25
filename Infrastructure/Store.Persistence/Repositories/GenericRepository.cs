@@ -20,7 +20,7 @@ namespace Store.Persistence.Repositories
             if (typeof(TEntity) == typeof(Product))
             {
                 return changeTracker ?
-                 await _context.Products.Include(P => P.Brand).Include(P => P.Type).ToListAsync() as IEnumerable<TEntity> :
+                 await _context.Products.Skip( 5 * 2).Take(5).Include(P => P.Brand).Include(P => P.Type).ToListAsync() as IEnumerable<TEntity> :
                  await _context.Products.Include(P => P.Brand).Include(P => P.Type).AsNoTracking().ToListAsync() as IEnumerable<TEntity>;
 
             }
