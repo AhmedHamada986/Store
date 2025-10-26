@@ -1,4 +1,5 @@
-﻿using Store.Shard.Dtos.Products;
+﻿using Store.Shard;
+using Store.Shard.Dtos.Products;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Store.Services.Abstraction.Products
     public interface IProductService
     {
 
-       Task<IEnumerable<ProductResponse>> GetAllProductsAsync(int? brandId, int? typeId,string? sort,string? search );
+       Task<PaginationResponse<ProductResponse>>   GetAllProductsAsync(ProductQueryParameters parameters );
 
         Task<ProductResponse> GetProductByIdAsync(int id);
 

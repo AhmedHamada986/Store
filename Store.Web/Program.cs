@@ -1,5 +1,8 @@
 
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Store.Domain.Contracts;
 using Store.Domain.Entities.Products;
 using Store.Persistence;
@@ -7,6 +10,8 @@ using Store.Persistence.Data.Contexts;
 using Store.Services;
 using Store.Services.Abstraction;
 using Store.Services.Mapping.Products;
+using Store.Shard.ErrorsModels;
+using Store.Web.Middlewares;
 using System.Threading.Tasks;
 
 namespace Store.Web
@@ -31,15 +36,32 @@ namespace Store.Web
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddScoped<IUniteOfWork, UniteOfWork>();
             builder.Services.AddScoped<IServiceManager, ServiceManger>();
-            builder.Services.AddAutoMapper(M=>M.AddProfile(new ProductProfile(builder.Configuration)));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new ProductProfile(builder.Configuration)));
+            //builder.Services.AddAutoMapper<IServiceManager,ServiceManger> ();
+            builder.Services.Configure<ApiBehaviorOptions>(config =>
+            {
+                config.InvalidModelStateResponseFactory = (actionContext) =>
+                {
+                  var errors=   actionContext.ModelState.Where(m => m.Value.Errors.Any())
+                                            .Select(m => new ValidationError() {
+                                                Field = m.Key,
+                                                Errors =m.Value.Errors.Select(errors =>errors.ErrorMessage)
+                                            });
+                    var response = new ValidationErrorResponse()
+                    {
 
-
-               var app = builder.Build();
+                        Errors = errors
+                    };  
+                    return new BadRequestObjectResult("");    
+                };
+            });
+            var app = builder.Build();
 
             using var scope= app.Services.CreateScope();
             var dbInitializer= scope.ServiceProvider.GetRequiredService<IDbInitializer>();
             await dbInitializer.InitializeAsync();
 
+            app.UseMiddleware<GlobalErrorHandlingMiddleWare>();
              app.UseStaticFiles();
 
             // Configure the HTTP request pipeline.

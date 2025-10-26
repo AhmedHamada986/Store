@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Store.Services.Abstraction;
+using Store.Shard.Dtos.Products;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +15,9 @@ namespace Store.Presentation
     public class ProductsController(IServiceManager _serviceManager) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetALlProducts(int? brandId, int? typeId,string? sort,string? search  )
+        public async Task<IActionResult> GetALlProducts([FromQuery] ProductQueryParameters parameters  )
         {
-            var result = await _serviceManager.ProductService.GetAllProductsAsync(brandId, typeId,sort,search);
+            var result = await _serviceManager.ProductService.GetAllProductsAsync(parameters);
 
             if (result is null) return BadRequest();
 
@@ -24,7 +25,7 @@ namespace Store.Presentation
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GerProductById(int? id )
+        public async Task<IActionResult> GetProductById(int? id )
         {
             if(id is null) return BadRequest(); 
             var result = await _serviceManager.ProductService.GetProductByIdAsync(id.Value);

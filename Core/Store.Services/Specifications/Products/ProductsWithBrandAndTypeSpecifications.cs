@@ -1,8 +1,10 @@
 ﻿using Store.Domain.Entities.Products;
+using Store.Shard.Dtos.Products;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,22 +20,28 @@ namespace Store.Services.Specifications.Products
             //    Include.Add(P => P.Type);
             ApplyIncludes();
         }
-        public ProductsWithBrandAndTypeSpecifications(int? brandId , int? typeId, string? sort, string? search):base
+        public ProductsWithBrandAndTypeSpecifications(ProductQueryParameters parameters) :base
             (
             
             P=>
 
-            (!brandId.HasValue || P.BrandId== brandId)
+            (!parameters.BrandId.HasValue || P.BrandId== parameters.BrandId)
             && 
-            (!typeId.HasValue || P.TypeId == typeId)
+            (!parameters.TypeId.HasValue || P.TypeId == parameters.TypeId)
             &&
-            (string.IsNullOrEmpty(search)|| P.Name.ToLower().Contains(search.ToLower()))
+            (string.IsNullOrEmpty(parameters.Search) || P.Name.ToLower().Contains(parameters.Search.ToLower()))
             )
         {
             //    Include.Add(P => P.Brand);
             //    Include.Add(P => P.Type);
 
-            ApplySorting(sort);
+
+            //     PageIndex =3 
+            //     PageSize  = 5
+            //     skip = 2* 5  (pageIndex - 1 )* page size 
+            //     Take  = pagesize 
+            ApplyPagination(parameters.PageSize, parameters.PageIndex);
+            ApplySorting(parameters.Sort);
             ApplyIncludes();
 
         }
