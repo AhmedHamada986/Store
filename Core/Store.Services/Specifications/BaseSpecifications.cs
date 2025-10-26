@@ -24,6 +24,13 @@ namespace Store.Services.Specifications
             Criteria = expression;
         }
 
+        public void ApplyPagination(int pageSize , int pageIndex ) {
+
+            IsPagination = true;
+            Skip = (pageIndex - 1) * pageSize;
+            Take = pageSize;
+        }
+
         public void AddOrderBy(Expression<Func<TEntity, object>> expression){
             OrderBy = expression;
           }
@@ -32,5 +39,7 @@ namespace Store.Services.Specifications
         
             OrderByDescending = expression; 
         }
+
+
     }
 }

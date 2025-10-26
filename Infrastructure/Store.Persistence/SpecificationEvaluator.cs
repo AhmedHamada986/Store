@@ -14,7 +14,7 @@ namespace Store.Persistence
     {
         public static IQueryable<TEntity> GetQuery<TKey, TEntity>(IQueryable<TEntity> inputQuery,ISpecification<TKey,TEntity> spec) where TEntity : BaseEntity<TKey>
         {
-            var query = inputQuery;
+            var query = inputQuery; 
 
             if (spec.Criteria is not null) {  
 
@@ -31,6 +31,10 @@ namespace Store.Persistence
             
             }
 
+            if (spec.IsPagination) {
+            
+                query =query.Skip(spec.Skip).Take(spec.Take);   
+            }
            query= spec.Include.Aggregate(query,(query,IncludeExpression)=>query.Include(IncludeExpression));
             return query;
         
