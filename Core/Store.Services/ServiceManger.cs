@@ -10,9 +10,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Store.Services
-{
-    public class ServiceManger (IUniteOfWork _uniteOfWork, IMapper _mapper): IServiceManager
+{   
+    public class ServiceManger (IUniteOfWork _uniteOfWork, 
+        IBasketRepository basketRepository,
+        ICashRepository cashRepository,
+        IMapper _mapper): IServiceManager
     {
         public IProductService ProductService { get; } =new ProductService(_uniteOfWork, _mapper);
+
+        public IBasketService basketService { get; } = new BasketService(basketRepository,_mapper);
+
+        public ICashService cashService { get; } = new CashService(cashRepository);
     }
 }

@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Store.Presentation.Attributes;
 using Store.Services.Abstraction;
+using Store.Shard;
 using Store.Shard.Dtos.Products;
 using System;
 using System.Collections.Generic;
@@ -15,11 +18,13 @@ namespace Store.Presentation
     public class ProductsController(IServiceManager _serviceManager) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetALlProducts([FromQuery] ProductQueryParameters parameters  )
+        [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(PaginationResponse<ProductResponse>))]
+        [Cashe]
+        public async Task<ActionResult<PaginationResponse<ProductResponse>>> GetALlProducts([FromQuery] ProductQueryParameters parameters  )
         {
             var result = await _serviceManager.ProductService.GetAllProductsAsync(parameters);
 
-            if (result is null) return BadRequest();
+            //if (result is null) return BadRequest();
 
             return Ok(result);
         }

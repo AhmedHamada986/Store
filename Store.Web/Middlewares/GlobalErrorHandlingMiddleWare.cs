@@ -20,7 +20,7 @@ namespace Store.Web.Middlewares
             {
 
 
-                await _next.Invoke(context);
+                await _next.Invoke(context); 
                 if (context.Response.StatusCode == StatusCodes.Status404NotFound)
                 {
                     context.Response.ContentType = "application/json";
@@ -28,7 +28,7 @@ namespace Store.Web.Middlewares
                     StatusCode = StatusCodes.Status404NotFound,
                     ErrorMessage  =$"Endpoint {context.Request.Path}is not Exist "
                     };
-                    context.Response.WriteAsJsonAsync(response);
+                    await context.Response.WriteAsJsonAsync(response);
 
                 }
 
@@ -54,6 +54,7 @@ namespace Store.Web.Middlewares
                 {
 
                     NotFoundException => StatusCodes.Status404NotFound,
+                    BadRequestException => StatusCodes.Status400BadRequest,
                     _=> StatusCodes.Status500InternalServerError
                 };
 
