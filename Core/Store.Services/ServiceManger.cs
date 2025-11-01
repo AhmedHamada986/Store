@@ -1,8 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Store.Domain.Contracts;
+using Store.Domain.Entities.Identity;
 using Store.Services.Abstraction;
 using Store.Services.Abstraction.Products;
 using Store.Services.Products;
+using Store.Shard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +19,8 @@ namespace Store.Services
     public class ServiceManger (IUniteOfWork _uniteOfWork, 
         IBasketRepository basketRepository,
         ICashRepository cashRepository,
+        UserManager<AppUser> userManager,
+        IOptions<JwtOptions> options,
         IMapper _mapper): IServiceManager
     {
         public IProductService ProductService { get; } =new ProductService(_uniteOfWork, _mapper);
@@ -21,5 +28,8 @@ namespace Store.Services
         public IBasketService basketService { get; } = new BasketService(basketRepository,_mapper);
 
         public ICashService cashService { get; } = new CashService(cashRepository);
+
+        public IAuthService authService { get; } = new AuthService(userManager,options);
+           
     }
 }

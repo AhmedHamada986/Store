@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Store.Presentation.Attributes;
 using Store.Services.Abstraction;
@@ -19,7 +20,8 @@ namespace Store.Presentation
     {
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(PaginationResponse<ProductResponse>))]
-        [Cashe]
+        //[Cashe]
+        [Authorize]
         public async Task<ActionResult<PaginationResponse<ProductResponse>>> GetALlProducts([FromQuery] ProductQueryParameters parameters  )
         {
             var result = await _serviceManager.ProductService.GetAllProductsAsync(parameters);

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Store.Domain.Exceptions;
 using Store.Shard.ErrorsModels;
 
@@ -55,6 +57,8 @@ namespace Store.Web.Middlewares
 
                     NotFoundException => StatusCodes.Status404NotFound,
                     BadRequestException => StatusCodes.Status400BadRequest,
+                    ValidationException => HandleValidationExceptionAsyc((ValidationException)ex,response),
+                    UnAuthorizedException=> StatusCodes.Status401Unauthorized,
                     _=> StatusCodes.Status500InternalServerError
                 };
 
@@ -63,7 +67,15 @@ namespace Store.Web.Middlewares
 
             }
 
+          
 
+        }
+        private static  int HandleValidationExceptionAsyc(ValidationException ex,ErrorDetails response) {
+
+
+            response.Errors = ex.Errors;
+
+            return StatusCodes.Status400BadRequest; 
         }
     }
 }
