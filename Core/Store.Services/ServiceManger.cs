@@ -33,6 +33,6 @@ namespace Store.Services
 
         public IAuthService authService { get; } = new AuthService(userManager,options);
 
-        public IOrderService OrderService { get; } = new OrderService(_uniteOfWork,_mapper,_basketRepository);
+        public IOrderService OrderService { get; } = new OrderService(_uniteOfWork,_mapper,basketRepository);
     }
 }
