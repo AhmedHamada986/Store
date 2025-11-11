@@ -21,18 +21,18 @@ namespace Store.Persistence
         //public IGenericRepository<TKey, TEntity> GetRepository<TKey, TEntity>() where TEntity : BaseEntity<TKey>
         //{
         //  var type =typeof(TEntity).Name;
-        //    if (!_repositories.ContainsKey(type)) {
+        //    if (!_repositories.ContainsKey(type)) {   
 
         //        var repository = new GenericRepository<TKey, TEntity>(_context);
         //        _repositories.Add(type, repository);
         //    }
         //    return (IGenericRepository<TKey, TEntity>)_repositories[type];
-        //}
+        //}   
 
         public IGenericRepository<TKey, TEntity> GetRepository<TKey, TEntity>() where TEntity : BaseEntity<TKey>
         {
            return (IGenericRepository<TKey, TEntity>) _repositories.GetOrAdd(typeof(TEntity).Name,new GenericRepository<TKey,TEntity>(_context));
-        }   
+        }       
 
 
 
