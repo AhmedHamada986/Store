@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Store.Domain.Contracts;
 using Store.Domain.Entities.Identity;
+using Store.Domain.Entities.Orders;
 using Store.Domain.Entities.Products;
 using Store.Persistence.Data.Contexts;
 using Store.Persistence.Identity;
@@ -35,6 +36,25 @@ namespace Store.Persistence
             }
 
             //Data Seeding 
+
+            if (!_context.DeliveryMethodes.Any())
+            {
+                // Product Brand 
+
+                // Read All Data from jsom file 
+                //C:\Users\GEEKS\source\repos\Store\Infrastructure\Store.Persistence\Data\DataSeeding\brands.json
+                    var deliveryData = await File.ReadAllTextAsync(@"..\Infrastructure\Store.Persistence\Data\DataSeeding\delivery.json");
+                // 2. convert json string to list<product brand >
+
+                var deliveryMethods  = JsonSerializer.Deserialize<List<DeliveryMethode>>(deliveryData);
+
+                if (deliveryMethods is not null && deliveryMethods.Count > 0)
+                { 
+                    await _context.DeliveryMethodes.AddRangeAsync(deliveryMethods);
+
+                }
+
+            }
 
             if (!_context.ProductBrands.Any())
             {

@@ -5,7 +5,9 @@ using Microsoft.Extensions.Options;
 using Store.Domain.Contracts;
 using Store.Domain.Entities.Identity;
 using Store.Services.Abstraction;
+using Store.Services.Abstraction.Orders;
 using Store.Services.Abstraction.Products;
+using Store.Services.Orders;
 using Store.Services.Products;
 using Store.Shard;
 using System;
@@ -30,6 +32,7 @@ namespace Store.Services
         public ICashService cashService { get; } = new CashService(cashRepository);
 
         public IAuthService authService { get; } = new AuthService(userManager,options);
-           
+
+        public IOrderService OrderService { get; } = new OrderService(_uniteOfWork,_mapper,_basketRepository);
     }
 }

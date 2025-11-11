@@ -1,4 +1,5 @@
-﻿using Store.Services.Abstraction.Products;
+﻿using Store.Services.Abstraction.Orders;
+using Store.Services.Abstraction.Products;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Store.Services.Abstraction
          IBasketService basketService { get;  }
          ICashService cashService { get; }
         IAuthService authService { get; } 
+        IOrderService OrderService { get; }
 
     }
 }
