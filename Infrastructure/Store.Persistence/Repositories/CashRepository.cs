@@ -1,0 +1,32 @@
+﻿using StackExchange.Redis;
+using Store.Domain.Contracts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
+
+namespace Store.Persistence.Repositories
+{
+    public class CashRepository(IConnectionMultiplexer connection) : ICashRepository
+    {
+        private readonly IDatabase _database = connection.GetDatabase();
+        public async Task<string?> GetAsync(string key)
+        {
+          var value = await  _database.StringGetAsync(key);
+            //if (value.IsNullOrEmpty) return null; 
+            return value.IsNullOrEmpty ? value : default; 
+
+        }
+
+        public async Task SetAsync(string key, object value, TimeSpan duration)
+        {
+            var redisValue= JsonSerializer.Serialize(value);
+            await _database.StringSetAsync(key, redisValue, duration);
+
+           
+        }
+    }
+}
