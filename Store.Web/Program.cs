@@ -31,6 +31,7 @@ namespace Store.Web
             var app = builder.Build();
 
             await app.ConfigurMiddleWares();
+            // Configure the HTTP request pipeline.
             app.Run();
         }
     }
