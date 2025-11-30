@@ -31,7 +31,7 @@ namespace Store.Services
 
         public ICashService cashService { get; } = new CashService(cashRepository);
 
-        public IAuthService authService { get; } = new AuthService(userManager,options);
+        public IAuthService authService { get; } = new AuthService(userManager,options,_mapper);
 
         public IOrderService OrderService { get; } = new OrderService(_uniteOfWork,_mapper,basketRepository);
     }

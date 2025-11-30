@@ -12,11 +12,64 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options; 
+using Microsoft.Extensions.Options;
+using Store.Shard.Dtos.Auth;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 namespace Store.Services
 {
-    public class AuthService(UserManager<AppUser> _userManager,IOptions<JwtOptions> options) : IAuthService
+    public class AuthService(UserManager<AppUser> _userManager,IOptions<JwtOptions> options,IMapper _mapper) : IAuthService
     {
+        public async Task<bool> CheckEmailExistAsync(string email)
+        {
+           return await _userManager.FindByEmailAsync(email)!=null;
+        }
+        public async Task<UserResultDto?> GetCurrentUserAsync(string email)
+        {
+           var user =await _userManager.FindByEmailAsync(email);
+            if (user is null) throw new Exception();
+            return new UserResultDto()
+            {
+                DisplayName = user.DisplayName,
+                Email = user.Email,
+                Token = await GenerateJWTTokenAsync(user),
+
+            };
+        }
+
+        public async Task<AddressDto> GetCurrentUserAddress(string email)
+        {
+
+            //_userManager.FindByEmailAsync();// Function do not Load the navigational Property 
+        var user =  await _userManager.Users.Include(U=>U.Address).FirstOrDefaultAsync(U=>U.Email.ToLower()== email.ToLower());
+            if (user is null) throw new Exception();
+            return _mapper.Map<AddressDto>(user.Address);
+        }
+
+    
+        public async Task<AddressDto> UpdateCurretnUserAddress(AddressDto request, string email)
+        {
+            var user = await _userManager.Users.Include(U => U.Address).FirstOrDefaultAsync( U=>U.Email.ToLower() == email.ToLower());
+            if (user is null) throw new Exception();
+            if (user.Address is null)
+            {
+
+                // Create New Address
+                user.Address = _mapper.Map<Address>(request); 
+            }
+            else {
+                // Update The Old Address 
+                user.Address.FirstName = request.FirstName; 
+                user.Address.LastName = request.LastName;   
+                user.Address.City = request.City;
+                user.Address.Contury = request.Country;
+                user.Address.Street = request.Street;
+
+            }
+            await _userManager.UpdateAsync(user);
+            return _mapper.Map<AddressDto>(user.Address);
+        }
+
         public async Task<UserResultDto> LoginAsync(LoginDto loginDto)
         {
           var user=await  _userManager.FindByEmailAsync(loginDto.Email);
@@ -53,6 +106,8 @@ namespace Store.Services
             
             };
         }
+
+       
 
         private async Task<string> GenerateJWTTokenAsync(AppUser user) 
         {
